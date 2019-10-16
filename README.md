@@ -25,7 +25,7 @@ Next, include some env vars in your other services to tell docker-gen to include
 ```
   whoami:
     image: emilevauge/whoami:latest
-    environment:
+    labels:
       CADDY_HOST: "whoami.example.com"
       CADDY_PROXY_PARAMS: "transparent,websocket"
       CADDY_BASIC_AUTH: "/:foo:bar,/dir:user:badpassword"
@@ -33,7 +33,7 @@ Next, include some env vars in your other services to tell docker-gen to include
 
 As long as your server is accessible at `whoami.example.com`, you'll be up and running with HTTPS in seconds.
 
-### Environmental variables:
+### Labels:
 
 Set these on any container you want proxied.
 

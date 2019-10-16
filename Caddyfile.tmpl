@@ -2,14 +2,14 @@ localhost:2015 {
   on startup docker-gen.sh &
 }
 import /etc/caddy/*.caddyfile
-{{ range $container := whereExist $ "Env.CADDY_HOST" }}
-{{ $container.Env.CADDY_HOST }} {
-  {{ if contains $container.Env "CADDY_DISABLE_TLS" }}tls off{{ end }}
+{{ range $container := whereExist $ "Labels.CADDY_HOST" }}
+{{ $container.Labels.CADDY_HOST }} {
+  {{ if contains $container.Labels "CADDY_DISABLE_TLS" }}tls off{{ end }}
   gzip
   log stdout
   errors stdout
-  {{ if contains $container.Env "CADDY_BASIC_AUTH" }}
-    {{ range $auth := split $container.Env.CADDY_BASIC_AUTH "," }}
+  {{ if contains $container.Labels "CADDY_BASIC_AUTH" }}
+    {{ range $auth := split $container.Labels.CADDY_BASIC_AUTH "," }}
       {{ with $params := split $auth ":" }}
         {{ if eq (len $params) 3 }}
   basicauth{{ range $param := $params }} {{ $param }}{{ end }}
@@ -17,10 +17,10 @@ import /etc/caddy/*.caddyfile
       {{ end }}
     {{ end }}
   {{ end }}
-  proxy / {{ coalesce $container.Env.CADDY_SCHEME "http" }}://{{ $container.Name }}:
-  {{- coalesce $container.Env.CADDY_PORT (first $container.Addresses).Port "80" }}
-  {{- if contains $container.Env "CADDY_PROXY_PARAMS" }} {
-    {{ range $param := split $container.Env.CADDY_PROXY_PARAMS "," }}
+  proxy / {{ coalesce $container.Labels.CADDY_SCHEME "http" }}://{{ $container.Name }}:
+  {{- coalesce $container.Labels.CADDY_PORT (first $container.Addresses).Port "80" }}
+  {{- if contains $container.Labels "CADDY_PROXY_PARAMS" }} {
+    {{ range $param := split $container.Labels.CADDY_PROXY_PARAMS "," }}
     {{ $param }}
     {{ end }}
   }
